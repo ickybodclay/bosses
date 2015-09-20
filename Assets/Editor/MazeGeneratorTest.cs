@@ -2,7 +2,8 @@
 
 public class MazeGeneratorTest {
     [Test]
-    public void TestAddition() {
-        Assert.That(2 + 2 == 4);
+    public void TestMazeGenerator() {
+        Maze testMaze = new Maze(10, 10);
+        testMaze.print();
     }
 }
