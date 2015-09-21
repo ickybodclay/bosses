@@ -28,18 +28,17 @@ public class LevelManager : MonoBehaviour {
         for (int x = -1; x < columns + 1; ++x) {
             for (int y = -1; y < rows + 1; ++y) {
                 GameObject tile = floorTiles[Random.Range(0, floorTiles.Length)];
-                Quaternion rotation = Quaternion.identity;
                 if (x == -1 || x == columns || y == -1 || y == rows) {
-                    if (x == -1 && y == rows / 2) {
+                    if (x == -1 && y == rows / 2) { // top
                         tile = doorTiles[Random.Range(0, doorTiles.Length)];
                     }
-                    else if (x == columns && y == rows / 2) {
+                    else if (x == columns && y == rows / 2) { // right
                         tile = doorTiles[Random.Range(0, doorTiles.Length)];
                     }
-                    else if (x == columns / 2 && y == -1) {
+                    else if (x == columns / 2 && y == -1) { // bottom
                         tile = doorTiles[Random.Range(0, doorTiles.Length)];
                     }
-                    else if (x == columns / 2 && y == rows) {
+                    else if (x == columns / 2 && y == rows) { // left
                         tile = doorTiles[Random.Range(0, doorTiles.Length)];
                     }
                     else {
@@ -47,7 +46,7 @@ public class LevelManager : MonoBehaviour {
                     }
                 }
 
-                GameObject tileInstance = Instantiate(tile, new Vector3(x, y, 0f), rotation) as GameObject;
+                GameObject tileInstance = Instantiate(tile, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
                 tileInstance.transform.SetParent(levelHolder);
             }
         }
