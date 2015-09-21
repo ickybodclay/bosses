@@ -32,15 +32,19 @@ public class Player : MonoBehaviour {
         horizontal = (int)(Input.GetAxisRaw("Horizontal"));
         vertical = (int)(Input.GetAxisRaw("Vertical"));
 
-        if(horizontal != 0 || vertical != 0) {
-            if (!isFlipped && horizontal < 0) {
+        AttemptMove(horizontal, vertical);
+    }
+
+    void AttemptMove(int xDir, int yDir) {
+        if (xDir != 0 || yDir != 0) {
+            if (!isFlipped && xDir < 0) {
                 Vector3 flip = transform.localScale;
                 flip.x *= -1;
                 transform.localScale = flip;
                 transform.position += (Vector3.right * 0.5f);
                 isFlipped = true;
             }
-            else if (isFlipped && horizontal > 0) {
+            else if (isFlipped && xDir > 0) {
                 Vector3 flip = transform.localScale;
                 flip.x = Mathf.Abs(flip.x);
                 transform.localScale = flip;
@@ -49,7 +53,7 @@ public class Player : MonoBehaviour {
             }
 
             RaycastHit2D hit;
-            Move(horizontal, vertical, out hit);
+            Move(xDir, yDir, out hit);
         }
         else {
             animator.SetFloat("speed", 0.0f);
@@ -62,7 +66,7 @@ public class Player : MonoBehaviour {
         Vector3 newPostion = Vector3.MoveTowards(rb2D.position, end, inverseMoveTime * Time.deltaTime);
 
         boxCollider.enabled = false;
-        hit = Physics2D.Linecast(start, newPostion, blockingLayer);
+        hit = Physics2D.Linecast(start, end, blockingLayer);
         boxCollider.enabled = true;
 
         if (hit.transform == null) {
@@ -76,7 +80,10 @@ public class Player : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D other) {
         if (other.tag == "Door") {
-            System.Console.Write("Door touched");
+            Door door = other.GetComponent<Door>();
+            GameManager.instance.RoomX = door.destinationRoomX;
+            GameManager.instance.RoomY = door.destinationRoomY;
+            Application.LoadLevel(Application.loadedLevel);
         }
     }
 }

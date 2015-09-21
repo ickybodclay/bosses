@@ -5,8 +5,19 @@ public class GameManager : MonoBehaviour {
     public static GameManager instance = null;
 
     public LevelManager levelManager;
+    public int RoomX {
+        get;
+        set;
+    }
+    public int RoomY {
+        get;
+        set;
+    }
 
-    private int level = 1;
+    private Maze currentMaze;
+
+    private static readonly int MAZE_WIDTH = 3;
+    private static readonly int MAZE_HEIGHT = 3;
 
     void Awake() {
         if (instance == null) {
@@ -19,22 +30,25 @@ public class GameManager : MonoBehaviour {
         DontDestroyOnLoad(gameObject);
 
         levelManager = GetComponent<LevelManager>();
-        levelManager.SetupGame();
+
+        RoomX = 0;
+        RoomY = 0;
+        currentMaze = new Maze(MAZE_WIDTH, MAZE_HEIGHT);
+        levelManager.SetupGame(currentMaze);
 
         InitGame();
     }
 
     private void OnLevelWasLoaded(int index) {
-        level++;
-
         InitGame();
     }
 
     void InitGame() {
-        levelManager.SetupScene(level);
+        levelManager.SetupScene(RoomX, RoomY);
     }
 
     void RestartGame() {
-        levelManager.SetupGame();
+        currentMaze = new Maze(MAZE_WIDTH, MAZE_HEIGHT);
+        levelManager.SetupGame(currentMaze);
     }
 }
