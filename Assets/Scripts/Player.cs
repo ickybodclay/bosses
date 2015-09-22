@@ -9,12 +9,11 @@ public class Player : MonoBehaviour {
     public LayerMask blockingLayer;
 
     private Animator animator;
-    private BoxCollider2D boxCollider;      //The BoxCollider2D component attached to this object.
-    private Rigidbody2D rb2D;               //The Rigidbody2D component attached to this object.
+    private BoxCollider2D boxCollider;
+    private Rigidbody2D rb2D;
 
     private bool isFlipped;
 
-    // Use this for initialization
     void Start() {
         animator = GetComponent<Animator>();
         boxCollider = GetComponent<BoxCollider2D>();
@@ -24,10 +23,9 @@ public class Player : MonoBehaviour {
         isFlipped = false;
     }
 
-    // Update is called once per frame
     void Update() {
-        int horizontal = 0;     //Used to store the horizontal move direction.
-        int vertical = 0;       //Used to store the vertical move direction.
+        int horizontal = 0;
+        int vertical = 0;
 
         horizontal = (int)(Input.GetAxisRaw("Horizontal"));
         vertical = (int)(Input.GetAxisRaw("Vertical"));

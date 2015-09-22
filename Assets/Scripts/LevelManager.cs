@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 public class LevelManager : MonoBehaviour {
 
-    public int columns = 8;
-    public int rows = 8;
     public GameObject[] floorTiles;
     public GameObject[] wallTiles;
     public GameObject[] doorTiles;
 
     private Transform levelHolder;
 
+    private int columns = 11;
+    private int rows = 8;
     private Maze currentMaze;
     //private int roomX;
     //private int roomY;

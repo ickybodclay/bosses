@@ -16,6 +16,12 @@ public class GameManager : MonoBehaviour {
 
     private Maze currentMaze;
 
+    public Maze CurrentMaze {
+        get {
+            return currentMaze;
+        }
+    }
+
     private static readonly int MAZE_WIDTH = 3;
     private static readonly int MAZE_HEIGHT = 3;
 

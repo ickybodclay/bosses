@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 
 public class Maze {
     public enum RoomType {
@@ -6,7 +6,22 @@ public class Maze {
         ROOM
     }
 
-    private RoomType[][] maze;
+    [Serializable]
+    public class Room {
+        private RoomType type;
+
+        public RoomType Type {
+            get {
+                return type;
+            }
+        }
+
+        public Room(RoomType type) {
+            this.type = type;
+        }
+    }
+
+    private Room[][] maze;
     private readonly int WIDTH;
     private readonly int HEIGHT;
 
@@ -16,12 +31,12 @@ public class Maze {
         HEIGHT = height;
     }
 
-    public RoomType get(int x, int y) {
+    public Room get(int x, int y) {
         return maze[x][y];
     }
 
     public bool isRoom(int x, int y) {
-        return isValid(x, y) && maze[x][y] == RoomType.ROOM;
+        return isValid(x, y) && maze[x][y].Type == RoomType.ROOM;
     }
 
     public bool isValid(int x, int y) {
@@ -49,8 +64,8 @@ public class Maze {
             string row = "";
             for (int j = 0; j < maze[i].Length; ++j) {
                 row +=
-                    maze[i][j] == RoomType.ROOM ? 'O' : 
-                    maze[i][j] == RoomType.WALL ? 'X' : '?';
+                    maze[i][j].Type == RoomType.ROOM ? 'O' : 
+                    maze[i][j].Type == RoomType.WALL ? 'X' : '?';
             }
             System.Console.Write(row);
         }
