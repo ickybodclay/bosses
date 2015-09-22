@@ -27,16 +27,20 @@ public class Player : MonoBehaviour {
         Vector3 spawnPosition = transform.position;
         switch (spawn) {
             case Door.Spawn.TOP:
+                spawnPosition.x = 3.5f;
                 spawnPosition.y = 0f;
                 break;
             case Door.Spawn.BOTTOM:
+                spawnPosition.x = 3.5f;
                 spawnPosition.y = 5.5f;
                 break;
             case Door.Spawn.LEFT:
                 spawnPosition.x = 0f;
+                spawnPosition.y = 3.5f;
                 break;
             case Door.Spawn.RIGHT:
                 spawnPosition.x = 9f;
+                spawnPosition.y = 3.5f;
                 break;
             case Door.Spawn.CENTER:
                 spawnPosition.x = 3.5f;
@@ -68,6 +72,9 @@ public class Player : MonoBehaviour {
         Vector2 scale = transform.localScale;
         scale.x *= -1;
         transform.localScale = scale;
+        Vector3 position = transform.position;
+        position.x += facingRight ? -1 : 1;
+        transform.position = position;
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
