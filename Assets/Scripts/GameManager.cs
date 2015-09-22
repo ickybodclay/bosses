@@ -13,9 +13,12 @@ public class GameManager : MonoBehaviour {
         get;
         set;
     }
+    public Door.Spawn Spawn {
+        get;
+        set;
+    }
 
     private Maze currentMaze;
-
     public Maze CurrentMaze {
         get {
             return currentMaze;
@@ -37,24 +40,24 @@ public class GameManager : MonoBehaviour {
 
         levelManager = GetComponent<LevelManager>();
 
+        InitGame();
+        SetupRoom();
+    }
+
+    private void OnLevelWasLoaded(int index) {
+        SetupRoom();
+    }
+
+    void SetupRoom() {
+        levelManager.SetupScene(RoomX, RoomY);
+    }
+
+    void InitGame() {
         RoomX = 0;
         RoomY = 0;
         currentMaze = new Maze(MAZE_WIDTH, MAZE_HEIGHT);
         levelManager.SetupGame(currentMaze);
-
-        InitGame();
+        Spawn = Door.Spawn.CENTER;
     }
 
-    private void OnLevelWasLoaded(int index) {
-        InitGame();
-    }
-
-    void InitGame() {
-        levelManager.SetupScene(RoomX, RoomY);
-    }
-
-    void RestartGame() {
-        currentMaze = new Maze(MAZE_WIDTH, MAZE_HEIGHT);
-        levelManager.SetupGame(currentMaze);
-    }
 }

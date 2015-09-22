@@ -19,8 +19,31 @@ public class Player : MonoBehaviour {
         animator = GetComponent<Animator>();
         boxCollider = GetComponent<BoxCollider2D>();
         rb2D = GetComponent<Rigidbody2D>();
-
         inverseMoveTime = 1f / moveTime;
+        Spawn(GameManager.instance.Spawn);
+    }
+
+    private void Spawn(Door.Spawn spawn) {
+        Vector3 spawnPosition = transform.position;
+        switch (spawn) {
+            case Door.Spawn.TOP:
+                spawnPosition.y = 0f;
+                break;
+            case Door.Spawn.BOTTOM:
+                spawnPosition.y = 5.5f;
+                break;
+            case Door.Spawn.LEFT:
+                spawnPosition.x = 0f;
+                break;
+            case Door.Spawn.RIGHT:
+                spawnPosition.x = 9f;
+                break;
+            case Door.Spawn.CENTER:
+                spawnPosition.x = 3.5f;
+                spawnPosition.y = 3.5f;
+                break;
+        }
+        transform.position = spawnPosition;
     }
 
     void FixedUpdate() {
@@ -52,6 +75,7 @@ public class Player : MonoBehaviour {
             Door door = other.GetComponent<Door>();
             GameManager.instance.RoomX = door.destinationRoomX;
             GameManager.instance.RoomY = door.destinationRoomY;
+            GameManager.instance.Spawn = door.destinationSpawn;
             Application.LoadLevel(Application.loadedLevel);
         }
     }
