@@ -12,7 +12,8 @@ public class Player : MonoBehaviour {
     private BoxCollider2D boxCollider;
     private Rigidbody2D rb2D;
 
-    private bool isFlipped;
+    private bool facingRight = true;
+    private float maxSpeed = 10f;
 
     void Start() {
         animator = GetComponent<Animator>();
@@ -20,60 +21,30 @@ public class Player : MonoBehaviour {
         rb2D = GetComponent<Rigidbody2D>();
 
         inverseMoveTime = 1f / moveTime;
-        isFlipped = false;
     }
 
-    void Update() {
+    void FixedUpdate() {
         int horizontal = 0;
         int vertical = 0;
 
         horizontal = (int)(Input.GetAxisRaw("Horizontal"));
         vertical = (int)(Input.GetAxisRaw("Vertical"));
 
-        AttemptMove(horizontal, vertical);
+        animator.SetFloat("speed", Mathf.Abs(horizontal != 0 ? horizontal : vertical));
+
+        rb2D.velocity = new Vector2(horizontal * maxSpeed, vertical * maxSpeed);
+
+        if (horizontal > 0 && !facingRight)
+            Flip();
+        else if (horizontal < 0 && facingRight)
+            Flip();
     }
 
-    void AttemptMove(int xDir, int yDir) {
-        if (xDir != 0 || yDir != 0) {
-            if (!isFlipped && xDir < 0) {
-                Vector3 flip = transform.localScale;
-                flip.x *= -1;
-                transform.localScale = flip;
-                transform.position += (Vector3.right * 0.5f);
-                isFlipped = true;
-            }
-            else if (isFlipped && xDir > 0) {
-                Vector3 flip = transform.localScale;
-                flip.x = Mathf.Abs(flip.x);
-                transform.localScale = flip;
-                transform.position += (Vector3.left * 0.5f);
-                isFlipped = false;
-            }
-
-            RaycastHit2D hit;
-            Move(xDir, yDir, out hit);
-        }
-        else {
-            animator.SetFloat("speed", 0.0f);
-        }
-    }
-
-    protected bool Move(int xDir, int yDir, out RaycastHit2D hit) {
-        Vector2 start = transform.position;
-        Vector2 end = start + new Vector2(xDir, yDir);
-        Vector3 newPostion = Vector3.MoveTowards(rb2D.position, end, inverseMoveTime * Time.deltaTime);
-
-        boxCollider.enabled = false;
-        hit = Physics2D.Linecast(start, end, blockingLayer);
-        boxCollider.enabled = true;
-
-        if (hit.transform == null) {
-            animator.SetFloat("speed", 1f);
-            rb2D.MovePosition(newPostion);
-            return true;
-        }
-
-        return false;
+    void Flip() {
+        facingRight = !facingRight;
+        Vector2 scale = transform.localScale;
+        scale.x *= -1;
+        transform.localScale = scale;
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
