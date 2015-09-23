@@ -98,6 +98,7 @@ public class Player : MonoBehaviour {
 
     void Shoot() {
         if(Time.time > (lastShootTime + shootDelay)) {
+            animator.SetTrigger("punch");
             GameObject projectile = Instantiate(axeProjectile, transform.position + center, Quaternion.identity) as GameObject;
             projectile.GetComponent<Rigidbody2D>().velocity = (facingRight ? Vector2.right : Vector2.left) * shootSpeed;
             lastShootTime = Time.time;
