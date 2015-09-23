@@ -10,13 +10,13 @@ public class Projectile : MonoBehaviour {
 
     void Update() {
         transform.Rotate(Vector3.forward, -10f);
-        RandomizeColor();
+        //FlashRed();
     }
 
-    private void RandomizeColor() {
+    private void FlashRed() {
         float r = Random.Range(0f, 1f);
-        float g = 0f; //Random.Range(0f, 1f);
-        float b = 0f; //Random.Range(0f, 1f);
+        float g = 0f;
+        float b = 0f;
         GetComponent<SpriteRenderer>().color = new Color(r, g, b);
     }
 
