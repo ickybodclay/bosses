@@ -5,20 +5,25 @@ public class Player : MonoBehaviour {
 
     public float moveTime = 0.1f;
     public float inverseMoveTime;
-
+    public GameObject axeProjectile;
     public LayerMask blockingLayer;
+    public float shootSpeed = 10f;
+    public float shootDelay = 0.5f;
 
     private Animator animator;
     private BoxCollider2D boxCollider;
     private Rigidbody2D rb2D;
+    private Vector3 center;
 
     private bool facingRight = true;
     private float maxSpeed = 10f;
+    private float lastShootTime;
 
     void Start() {
         animator = GetComponent<Animator>();
         boxCollider = GetComponent<BoxCollider2D>();
         rb2D = GetComponent<Rigidbody2D>();
+        center = GetComponent<BoxCollider2D>().offset;
         inverseMoveTime = 1f / moveTime;
         Spawn(GameManager.instance.Spawn);
     }
@@ -48,6 +53,12 @@ public class Player : MonoBehaviour {
                 break;
         }
         transform.position = spawnPosition;
+    }
+
+    void Update() {
+        if (Input.GetKey(KeyCode.Z)) {
+            Shoot();
+        }
     }
 
     void FixedUpdate() {
@@ -84,6 +95,14 @@ public class Player : MonoBehaviour {
             GameManager.instance.RoomY = door.destinationRoomY;
             GameManager.instance.Spawn = door.destinationSpawn;
             Application.LoadLevel(Application.loadedLevel);
+        }
+    }
+
+    void Shoot() {
+        if(Time.time > (lastShootTime + shootDelay)) {
+            GameObject projectile = Instantiate(axeProjectile, transform.position + center, Quaternion.identity) as GameObject;
+            projectile.GetComponent<Rigidbody2D>().velocity = Vector2.right * shootSpeed;
+            lastShootTime = Time.time;
         }
     }
 }
