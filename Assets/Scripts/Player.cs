@@ -3,8 +3,6 @@ using System.Collections;
 
 public class Player : MonoBehaviour {
 
-    public float moveTime = 0.1f;
-    public float inverseMoveTime;
     public GameObject axeProjectile;
     public LayerMask blockingLayer;
     public float shootSpeed = 10f;
@@ -13,18 +11,17 @@ public class Player : MonoBehaviour {
     private Animator animator;
     private BoxCollider2D boxCollider;
     private Rigidbody2D rb2D;
-    private Vector3 center;
 
     private bool facingRight = true;
     private float maxSpeed = 10f;
     private float lastShootTime;
+    private Vector3 center;
 
     void Start() {
         animator = GetComponent<Animator>();
         boxCollider = GetComponent<BoxCollider2D>();
         rb2D = GetComponent<Rigidbody2D>();
         center = GetComponent<BoxCollider2D>().offset;
-        inverseMoveTime = 1f / moveTime;
         Spawn(GameManager.instance.Spawn);
     }
 
@@ -86,6 +83,7 @@ public class Player : MonoBehaviour {
         Vector3 position = transform.position;
         position.x += facingRight ? -1 : 1;
         transform.position = position;
+        center.x *= -1;
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
@@ -101,7 +99,7 @@ public class Player : MonoBehaviour {
     void Shoot() {
         if(Time.time > (lastShootTime + shootDelay)) {
             GameObject projectile = Instantiate(axeProjectile, transform.position + center, Quaternion.identity) as GameObject;
-            projectile.GetComponent<Rigidbody2D>().velocity = Vector2.right * shootSpeed;
+            projectile.GetComponent<Rigidbody2D>().velocity = (facingRight ? Vector2.right : Vector2.left) * shootSpeed;
             lastShootTime = Time.time;
         }
     }
