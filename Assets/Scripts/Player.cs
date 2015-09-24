@@ -16,11 +16,6 @@ public class Player : MonoBehaviour {
     private float maxSpeed = 10f;
     private float lastShootTime;
     private Vector3 center;
-    private int health = 5;
-
-    public int Health {
-        get { return health; }
-    }
 
     void Start() {
         animator = GetComponent<Animator>();
@@ -64,9 +59,9 @@ public class Player : MonoBehaviour {
 
         // FOR TESTING ONLY
         if (Input.GetKeyDown(KeyCode.X)) {
-            health--;
+            GameManager.instance.PlayerHealth--;
             animator.SetTrigger("hit");
-            animator.SetInteger("health", health);
+            animator.SetInteger("health", GameManager.instance.PlayerHealth);
         }
     }
 

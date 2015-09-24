@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 
 public class PlayerHealthBar : MonoBehaviour {
-    public GameObject player;
     public GameObject heartImage;
 
     private List<GameObject> hearts;
@@ -13,13 +12,13 @@ public class PlayerHealthBar : MonoBehaviour {
 	}
 	
 	void Update () {
-	    if(player.GetComponent<Player>().Health != hearts.Count) {
+	    if(GameManager.instance.PlayerHealth != hearts.Count) {
             UpdateHearts();
         }
 	}
 
     private void UpdateHearts() {
-        int playerHealth = player.GetComponent<Player>().Health;
+        int playerHealth = GameManager.instance.PlayerHealth;
         if (playerHealth > hearts.Count) {
             int offset = hearts.Count - 1;
             for(int i=0; i < playerHealth - hearts.Count; ++i) {

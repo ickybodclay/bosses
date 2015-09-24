@@ -25,6 +25,11 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    public int PlayerHealth {
+        get;
+        set;
+    }
+
     private static readonly int MAZE_WIDTH = 3;
     private static readonly int MAZE_HEIGHT = 3;
 
@@ -58,6 +63,7 @@ public class GameManager : MonoBehaviour {
         currentMaze = new Maze(MAZE_WIDTH, MAZE_HEIGHT);
         levelManager.SetupGame(currentMaze);
         Spawn = Door.Spawn.CENTER;
+        PlayerHealth = 5;
     }
 
 }
