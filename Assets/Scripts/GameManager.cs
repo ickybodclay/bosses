@@ -30,6 +30,11 @@ public class GameManager : MonoBehaviour {
         set;
     }
 
+    public int BossHealth {
+        get;
+        set;
+    }
+
     private static readonly int MAZE_WIDTH = 3;
     private static readonly int MAZE_HEIGHT = 3;
 

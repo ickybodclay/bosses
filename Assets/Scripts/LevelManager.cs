@@ -29,6 +29,8 @@ public class LevelManager : MonoBehaviour {
                 GameObject tile = floorTiles[Random.Range(0, floorTiles.Length)];
                 int destinationRoomX = -1;
                 int destinationRoomY = -1;
+                float colliderOffsetX = 0f;
+                float colliderOffsetY = 0f;
                 Door.Spawn destinationSpawn = Door.Spawn.TOP;
                 if (x == -1 || x == columns || y == -1 || y == rows) {
                     if (currentMaze.hasRoomWest(roomX, roomY) && x == -1 && y == rows / 2) { // left
@@ -36,24 +38,28 @@ public class LevelManager : MonoBehaviour {
                         destinationRoomX = roomX - 1;
                         destinationRoomY = roomY;
                         destinationSpawn = Door.Spawn.RIGHT;
+                        colliderOffsetX = -0.5f;
                     }
                     else if (currentMaze.hasRoomEast(roomX, roomY) && x == columns && y == rows / 2) { // right
                         tile = doorTiles[Random.Range(0, doorTiles.Length)];
                         destinationRoomX = roomX + 1;
                         destinationRoomY = roomY;
                         destinationSpawn = Door.Spawn.LEFT;
+                        colliderOffsetX = 0.5f;
                     }
                     else if (currentMaze.hasRoomNorth(roomX, roomY) && x == columns / 2 && y == -1) { // top
                         tile = doorTiles[Random.Range(0, doorTiles.Length)];
                         destinationRoomX = roomX;
                         destinationRoomY = roomY - 1;
                         destinationSpawn = Door.Spawn.BOTTOM;
+                        colliderOffsetY = -0.5f;
                     }
                     else if (currentMaze.hasRoomSouth(roomX, roomY) && x == columns / 2 && y == rows) { // bottom
                         tile = doorTiles[Random.Range(0, doorTiles.Length)];
                         destinationRoomX = roomX;
                         destinationRoomY = roomY + 1;
                         destinationSpawn = Door.Spawn.TOP;
+                        colliderOffsetY = 0.5f;
                     }
                     else {
                         tile = wallTiles[Random.Range(0, wallTiles.Length)];
@@ -67,6 +73,7 @@ public class LevelManager : MonoBehaviour {
                     door.destinationRoomX = destinationRoomX;
                     door.destinationRoomY = destinationRoomY;
                     door.destinationSpawn = destinationSpawn;
+                    tileInstance.GetComponent<BoxCollider2D>().offset = new Vector2(colliderOffsetX, colliderOffsetY);
                 }
             }
         }

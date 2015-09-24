@@ -3,13 +3,15 @@ using System.Collections;
 
 public class Boss : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    private Animator animator;
+
+    void Start() {
+        animator = GetComponent<Animator>();
+    }
+
+    private void OnTriggerEnter2D(Collider2D other) {
+        if(other.tag == "PlayerProjectile") {
+            animator.SetTrigger("hit");
+        }
+    }
 }
