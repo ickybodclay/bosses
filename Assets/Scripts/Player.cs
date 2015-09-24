@@ -5,7 +5,7 @@ public class Player : MonoBehaviour {
 
     public GameObject axeProjectile;
     public LayerMask blockingLayer;
-    public float shootSpeed = 10f;
+    public float shootSpeed = 20f;
     public float shootDelay = 0.5f;
 
     private Animator animator;
@@ -60,6 +60,13 @@ public class Player : MonoBehaviour {
     void Update() {
         if (Input.GetKey(KeyCode.Z)) {
             Shoot();
+        }
+
+        // FOR TESTING ONLY
+        if (Input.GetKeyDown(KeyCode.X)) {
+            health--;
+            animator.SetTrigger("hit");
+            animator.SetInteger("health", health);
         }
     }
 
