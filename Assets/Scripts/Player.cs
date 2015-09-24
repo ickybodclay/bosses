@@ -16,6 +16,11 @@ public class Player : MonoBehaviour {
     private float maxSpeed = 10f;
     private float lastShootTime;
     private Vector3 center;
+    private int health = 5;
+
+    public int Health {
+        get { return health; }
+    }
 
     void Start() {
         animator = GetComponent<Animator>();
