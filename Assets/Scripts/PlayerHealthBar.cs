@@ -29,6 +29,7 @@ public class PlayerHealthBar : MonoBehaviour {
             }
         }
         else if (playerHealth < hearts.Count) {
+            if (playerHealth < 0) playerHealth = 0;
             while(hearts.Count > playerHealth) {
                 Destroy(hearts[hearts.Count - 1].gameObject);
                 hearts.RemoveAt(hearts.Count - 1);
