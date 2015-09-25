@@ -4,6 +4,7 @@ public class Projectile : MonoBehaviour {
     public int damage;
     public float lifetime;
     public bool rotate;
+    public float rotateSpeed;
     public GameObject target;
 
     void Start() {
@@ -11,7 +12,7 @@ public class Projectile : MonoBehaviour {
     }
 
     void Update() {
-        if(rotate) transform.Rotate(Vector3.forward, -10f);
+        if(rotate) transform.Rotate(Vector3.forward, rotateSpeed);
         //FlashRed();
     }
 
