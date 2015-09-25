@@ -3,13 +3,15 @@
 public class Projectile : MonoBehaviour {
     public int damage;
     public float lifetime;
+    public bool rotate;
+    public GameObject target;
 
     void Start() {
         Destroy(this.gameObject, lifetime);
     }
 
     void Update() {
-        transform.Rotate(Vector3.forward, -10f);
+        if(rotate) transform.Rotate(Vector3.forward, -10f);
         //FlashRed();
     }
 
@@ -21,7 +23,7 @@ public class Projectile : MonoBehaviour {
     }
 
     void OnTriggerEnter2D(Collider2D other) {
-        if (other.tag == "Wall" || other.tag == "Door" || other.tag == "Boss") {
+        if (other.tag == "Wall" || other.tag == "Door" || other.tag == target.tag) {
             Destroy(this.gameObject);
         }
     }

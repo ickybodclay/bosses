@@ -9,17 +9,15 @@ public class Player : MonoBehaviour {
     public float shootDelay = 0.5f;
 
     private Animator animator;
-    private BoxCollider2D boxCollider;
     private Rigidbody2D rb2D;
 
     private bool facingRight = true;
-    private float maxSpeed = 10f;
+    private float maxSpeed = 300f;
     private float lastShootTime;
     private Vector3 center;
 
     void Start() {
         animator = GetComponent<Animator>();
-        boxCollider = GetComponent<BoxCollider2D>();
         rb2D = GetComponent<Rigidbody2D>();
         center = GetComponent<BoxCollider2D>().offset;
         Spawn(GameManager.instance.Spawn);
@@ -53,7 +51,7 @@ public class Player : MonoBehaviour {
     }
 
     void Update() {
-        if (Input.GetKey(KeyCode.Z)) {
+        if (Input.GetKey(KeyCode.Z) || Input.GetButton("Fire1")) {
             Shoot();
         }
 
@@ -63,16 +61,14 @@ public class Player : MonoBehaviour {
             animator.SetTrigger("hit");
             animator.SetInteger("health", GameManager.instance.PlayerHealth);
         }
-    }
 
-    void FixedUpdate() {
-        int horizontal = 0;
-        int vertical = 0;
+        float horizontal = 0f;
+        float vertical = 0f;
 
-        horizontal = (int)(Input.GetAxisRaw("Horizontal"));
-        vertical = (int)(Input.GetAxisRaw("Vertical"));
+        horizontal = Input.GetAxisRaw("Horizontal") * Time.deltaTime;
+        vertical = Input.GetAxisRaw("Vertical") * Time.deltaTime;
 
-        animator.SetFloat("speed", Mathf.Abs(horizontal != 0 ? horizontal : vertical));
+        animator.SetFloat("speed", Mathf.Abs(horizontal != 0f ? horizontal : vertical) * maxSpeed);
 
         rb2D.velocity = new Vector2(horizontal * maxSpeed, vertical * maxSpeed);
 
@@ -88,7 +84,7 @@ public class Player : MonoBehaviour {
         scale.x *= -1;
         transform.localScale = scale;
         Vector3 position = transform.position;
-        position.x += facingRight ? -1 : 1;
+        position.x += facingRight ? -0.5f : 0.5f;
         transform.position = position;
         center.x *= -1;
     }

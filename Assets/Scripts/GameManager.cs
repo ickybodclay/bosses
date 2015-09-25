@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class GameManager : MonoBehaviour {
     public static GameManager instance = null;
-
     public LevelManager levelManager;
+    public AudioClip phase1Music;
+    public AudioClip phase2Music;
+
     public int RoomX {
         get;
         set;
@@ -69,6 +70,7 @@ public class GameManager : MonoBehaviour {
         levelManager.SetupGame(currentMaze);
         Spawn = Door.Spawn.CENTER;
         PlayerHealth = 5;
+        SoundManager.instance.PlaySingle(phase1Music);
     }
 
 }

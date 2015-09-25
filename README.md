@@ -8,3 +8,7 @@ https://www.gamedevmarket.net/asset/micro-tileset-overworld-and-dungeon-1698/
 
 Weapons & Items:
 https://www.gamedevmarket.net/asset/pixelantasy-2655/
+
+Music:
+http://www.newgrounds.com/audio/listen/586056
+http://soundimage.org/funnyquirky/
