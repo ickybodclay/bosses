@@ -55,13 +55,6 @@ public class Player : MonoBehaviour {
             Shoot();
         }
 
-        // FOR TESTING ONLY
-        if (Input.GetKeyDown(KeyCode.X)) {
-            GameManager.instance.PlayerHealth--;
-            animator.SetTrigger("hit");
-            animator.SetInteger("health", GameManager.instance.PlayerHealth);
-        }
-
         float horizontal = 0f;
         float vertical = 0f;
 
