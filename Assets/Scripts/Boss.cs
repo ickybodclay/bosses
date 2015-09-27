@@ -10,7 +10,13 @@ public class Boss : MonoBehaviour {
     }
 
     private Animator animator;
-    private Type type = Type.EARTH;
+    private Type type = Type.RAINBOW;
+
+    public Type BossType {
+        get {
+            return type;
+        }
+    }
 
     void Start() {
         animator = GetComponent<Animator>();
@@ -18,7 +24,14 @@ public class Boss : MonoBehaviour {
     }
 
     private void InitType() {
-        switch(type) {
+        type =
+            (GameManager.instance.RoomX == 1 && GameManager.instance.RoomY == 0) ? Type.FIRE :
+            (GameManager.instance.RoomX == 0 && GameManager.instance.RoomY == 1) ? Type.WATER :
+            (GameManager.instance.RoomX == 2 && GameManager.instance.RoomY == 1) ? Type.AIR :
+            (GameManager.instance.RoomX == 1 && GameManager.instance.RoomY == 2) ? Type.EARTH :
+            (GameManager.instance.RoomX == 1 && GameManager.instance.RoomY == 4) ? Type.RAINBOW : Type.RAINBOW;
+
+        switch (type) {
             case Type.FIRE:
                 GetComponent<SpriteRenderer>().color = Color.red;
                 break;
@@ -35,10 +48,30 @@ public class Boss : MonoBehaviour {
                 GetComponent<SpriteRenderer>().color = rainbow[0];
                 break;
         }
+
+        if (!GameManager.instance.IsBossAlive(type))
+            Destroy(gameObject);
     }
 
     void Update() {
-        if(type == Type.RAINBOW) RainbowFadeColor();
+        switch (type) {
+            case Type.FIRE:
+                UpdateFireAI();
+                break;
+            case Type.WATER:
+                break;
+            case Type.AIR:
+                break;
+            case Type.EARTH:
+                break;
+            case Type.RAINBOW:
+                RainbowFadeColor();
+                break;
+        }
+    }
+
+    private void UpdateFireAI() {
+
     }
 
     private float colorTime = 0f;
@@ -68,6 +101,10 @@ public class Boss : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D other) {
         if(other.tag == "PlayerProjectile") {
             animator.SetTrigger("hit");
+            GameManager.instance.DamageBoss(type, other.GetComponent<Projectile>().damage);
+            if(!GameManager.instance.IsBossAlive(type)) {
+                Destroy(gameObject);
+            }
         }
     }
 }

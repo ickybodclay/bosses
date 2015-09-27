@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
     public static GameManager instance = null;
@@ -25,19 +26,20 @@ public class GameManager : MonoBehaviour {
             return currentMaze;
         }
     }
+    public readonly string[] blueprint = new string[] {
+        "XOX",
+        "OOO",
+        "XOX",
+        "XXX",
+        "XOX"
+    };
 
     public int PlayerHealth {
         get;
         set;
     }
 
-    public int BossHealth {
-        get;
-        set;
-    }
-
-    private static readonly int MAZE_WIDTH = 3;
-    private static readonly int MAZE_HEIGHT = 3;
+    private Dictionary<Boss.Type, int> bossHealthMap;
 
     void Awake() {
         if (instance == null) {
@@ -64,13 +66,41 @@ public class GameManager : MonoBehaviour {
     }
 
     void InitGame() {
-        RoomX = 0;
-        RoomY = 0;
-        currentMaze = new Maze(MAZE_WIDTH, MAZE_HEIGHT);
+        RoomX = 1;
+        RoomY = 1;
+        currentMaze = new Maze(blueprint);
         levelManager.SetupGame(currentMaze);
         Spawn = Door.Spawn.CENTER;
         PlayerHealth = 5;
+
+        bossHealthMap = new Dictionary<Boss.Type, int>();
+        bossHealthMap.Add(Boss.Type.FIRE, 1);
+        bossHealthMap.Add(Boss.Type.WATER, 1);
+        bossHealthMap.Add(Boss.Type.EARTH, 1);
+        bossHealthMap.Add(Boss.Type.AIR, 1);
+        bossHealthMap.Add(Boss.Type.RAINBOW, 50);
+
         SoundManager.instance.PlaySingle(phase1Music);
     }
 
+    public int GetBossHealth(Boss.Type type) {
+        return bossHealthMap[type];
+    }
+
+    public void DamageBoss(Boss.Type type, int damage) {
+        bossHealthMap[type] -= damage;
+    }
+
+    public bool IsBossAlive(Boss.Type type) {
+        return bossHealthMap[type] > 0;
+    }
+
+    public bool ShouldSpawnRainbowDragon() {
+        return 
+            bossHealthMap[Boss.Type.FIRE] <= 0 &&
+            bossHealthMap[Boss.Type.WATER] <= 0 &&
+            bossHealthMap[Boss.Type.EARTH] <= 0 &&
+            bossHealthMap[Boss.Type.AIR] <= 0 &&
+            bossHealthMap[Boss.Type.RAINBOW] > 0;
+    }
 }

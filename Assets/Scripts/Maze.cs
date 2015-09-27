@@ -31,6 +31,12 @@ public class Maze {
         HEIGHT = height;
     }
 
+    public Maze(string[] layout) {
+        maze = MazeGenerator.generate(layout);
+        WIDTH = maze.Length;
+        HEIGHT = maze[0].Length;
+    }
+
     public Room get(int x, int y) {
         return maze[x][y];
     }
@@ -60,9 +66,9 @@ public class Maze {
     }
 
     public void print() {
-        for (int i = 0; i < maze.Length; ++i) {
+        for (int i = 0; i < WIDTH; ++i) {
             string row = "";
-            for (int j = 0; j < maze[i].Length; ++j) {
+            for (int j = 0; j < HEIGHT; ++j) {
                 row +=
                     maze[i][j].Type == RoomType.ROOM ? 'O' : 
                     maze[i][j].Type == RoomType.WALL ? 'X' : '?';

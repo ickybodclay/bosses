@@ -27,11 +27,11 @@ public class Player : MonoBehaviour {
         Vector3 spawnPosition = transform.position;
         switch (spawn) {
             case Door.Spawn.TOP:
-                spawnPosition.x = 3.5f;
+                spawnPosition.x = 4.7f;
                 spawnPosition.y = 0f;
                 break;
             case Door.Spawn.BOTTOM:
-                spawnPosition.x = 3.5f;
+                spawnPosition.x = 4.7f;
                 spawnPosition.y = 5.5f;
                 break;
             case Door.Spawn.LEFT:
@@ -41,6 +41,7 @@ public class Player : MonoBehaviour {
             case Door.Spawn.RIGHT:
                 spawnPosition.x = 9f;
                 spawnPosition.y = 3.5f;
+                Flip();
                 break;
             case Door.Spawn.CENTER:
                 spawnPosition.x = 3.5f;

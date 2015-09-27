@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 
 public class LevelManager : MonoBehaviour {
 
@@ -12,6 +11,7 @@ public class LevelManager : MonoBehaviour {
     private int columns = 11;
     private int rows = 8;
     private Maze currentMaze;
+    private GameObject currentBoss;
 
     public void SetupGame(Maze currentMaze) {
         this.currentMaze = currentMaze;
@@ -24,6 +24,12 @@ public class LevelManager : MonoBehaviour {
     private void LevelSetup(int roomX, int roomY) {
         levelHolder = new GameObject("Level").transform;
 
+        currentBoss = GameObject.Find("Boss");
+        if (roomX == 1 && roomY == 1 && !GameManager.instance.ShouldSpawnRainbowDragon()) {
+            Destroy(currentBoss);
+            currentBoss = null;
+        }
+
         for (int x = -1; x < columns + 1; ++x) {
             for (int y = -1; y < rows + 1; ++y) {
                 GameObject tile = floorTiles[Random.Range(0, floorTiles.Length)];
@@ -33,28 +39,28 @@ public class LevelManager : MonoBehaviour {
                 float colliderOffsetY = 0f;
                 Door.Spawn destinationSpawn = Door.Spawn.TOP;
                 if (x == -1 || x == columns || y == -1 || y == rows) {
-                    if (currentMaze.hasRoomWest(roomX, roomY) && x == -1 && y == rows / 2) { // left
+                    if (currentMaze.hasRoomWest(roomX, roomY) && x == -1 && y == rows / 2) { // left door
                         tile = doorTiles[Random.Range(0, doorTiles.Length)];
                         destinationRoomX = roomX - 1;
                         destinationRoomY = roomY;
                         destinationSpawn = Door.Spawn.RIGHT;
                         colliderOffsetX = -0.5f;
                     }
-                    else if (currentMaze.hasRoomEast(roomX, roomY) && x == columns && y == rows / 2) { // right
+                    else if (currentMaze.hasRoomEast(roomX, roomY) && x == columns && y == rows / 2) { // right door
                         tile = doorTiles[Random.Range(0, doorTiles.Length)];
                         destinationRoomX = roomX + 1;
                         destinationRoomY = roomY;
                         destinationSpawn = Door.Spawn.LEFT;
                         colliderOffsetX = 0.5f;
                     }
-                    else if (currentMaze.hasRoomNorth(roomX, roomY) && x == columns / 2 && y == -1) { // top
+                    else if (currentMaze.hasRoomNorth(roomX, roomY) && x == columns / 2 && y == -1) { // top door 
                         tile = doorTiles[Random.Range(0, doorTiles.Length)];
                         destinationRoomX = roomX;
                         destinationRoomY = roomY - 1;
                         destinationSpawn = Door.Spawn.BOTTOM;
                         colliderOffsetY = -0.5f;
                     }
-                    else if (currentMaze.hasRoomSouth(roomX, roomY) && x == columns / 2 && y == rows) { // bottom
+                    else if (currentMaze.hasRoomSouth(roomX, roomY) && x == columns / 2 && y == rows) { // bottom door
                         tile = doorTiles[Random.Range(0, doorTiles.Length)];
                         destinationRoomX = roomX;
                         destinationRoomY = roomY + 1;
