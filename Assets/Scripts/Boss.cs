@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class Boss : MonoBehaviour {
     public enum Type {
@@ -49,11 +50,12 @@ public class Boss : MonoBehaviour {
                 break;
         }
 
-        if (!GameManager.instance.IsBossAlive(type))
-            Destroy(gameObject);
+        animator.SetInteger("health", GameManager.instance.GetBossHealth(type));
     }
 
     void Update() {
+        if (!GameManager.instance.IsBossAlive(type)) return;
+
         switch (type) {
             case Type.FIRE:
                 UpdateFireAI();
@@ -102,9 +104,22 @@ public class Boss : MonoBehaviour {
         if(other.tag == "PlayerProjectile") {
             animator.SetTrigger("hit");
             GameManager.instance.DamageBoss(type, other.GetComponent<Projectile>().damage);
+            animator.SetInteger("health", GameManager.instance.GetBossHealth(type));
             if(!GameManager.instance.IsBossAlive(type)) {
-                Destroy(gameObject);
+                if(type == Type.RAINBOW) {
+                    GetComponent<SpriteRenderer>().color = Color.white;
+                    GameManager.instance.StartCoroutine(LoadVictoryScene());
+                }
             }
         }
+    }
+
+    IEnumerator LoadVictoryScene() {
+        SoundManager.instance.musicSource.Stop();
+        SoundManager.instance.efxSource.Stop();
+
+        yield return new WaitForSeconds(0.5f);
+
+        Application.LoadLevel("Victory");
     }
 }

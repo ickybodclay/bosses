@@ -7,6 +7,7 @@ public class Player : MonoBehaviour {
     public LayerMask blockingLayer;
     public float shootSpeed = 20f;
     public float shootDelay = 0.5f;
+    public float takeDamageDelay = 0.5f;
 
     private Animator animator;
     private Rigidbody2D rb2D;
@@ -14,6 +15,7 @@ public class Player : MonoBehaviour {
     private bool facingRight = true;
     private float maxSpeed = 300f;
     private float lastShootTime;
+    private float lastDamageTime = 0f;
     private Vector3 center;
 
     void Start() {
@@ -52,6 +54,8 @@ public class Player : MonoBehaviour {
     }
 
     void Update() {
+        if (GameManager.instance.PlayerHealth <= 0) return;
+
         if (Input.GetKey(KeyCode.Z) || Input.GetButton("Fire1")) {
             Shoot();
         }
@@ -91,6 +95,32 @@ public class Player : MonoBehaviour {
             GameManager.instance.Spawn = door.destinationSpawn;
             Application.LoadLevel(Application.loadedLevel);
         }
+    }
+
+    private void OnCollisionEnter2D(Collision2D other) {
+        if (other.gameObject.tag == "Boss") {
+            TakeDamage(1);
+        }
+    }
+
+    private void TakeDamage(int damage) {
+        if(damage > 0 && Time.time > (lastDamageTime + takeDamageDelay)) {
+            animator.SetTrigger("hit");
+            GameManager.instance.PlayerHealth -= damage;
+            animator.SetInteger("health", GameManager.instance.PlayerHealth);
+            if (GameManager.instance.PlayerHealth <= 0) StartCoroutine(LoadGameOver());
+            lastDamageTime = Time.time;
+        }
+    }
+
+    IEnumerator LoadGameOver() {
+        rb2D.velocity = Vector2.zero;
+        SoundManager.instance.musicSource.Stop();
+        SoundManager.instance.efxSource.Stop();
+
+        yield return new WaitForSeconds(1f);
+
+        GameManager.instance.ResetGame();
     }
 
     void Shoot() {

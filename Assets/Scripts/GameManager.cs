@@ -58,7 +58,8 @@ public class GameManager : MonoBehaviour {
     }
 
     private void OnLevelWasLoaded(int index) {
-        SetupRoom();
+        if(Application.loadedLevelName == "Game")
+            SetupRoom();
     }
 
     void SetupRoom() {
@@ -78,9 +79,10 @@ public class GameManager : MonoBehaviour {
         bossHealthMap.Add(Boss.Type.WATER, 1);
         bossHealthMap.Add(Boss.Type.EARTH, 1);
         bossHealthMap.Add(Boss.Type.AIR, 1);
-        bossHealthMap.Add(Boss.Type.RAINBOW, 50);
+        bossHealthMap.Add(Boss.Type.RAINBOW, 3);
 
-        SoundManager.instance.PlaySingle(phase1Music);
+        SoundManager.instance.musicSource.clip = phase1Music;
+        SoundManager.instance.musicSource.Play();
     }
 
     public int GetBossHealth(Boss.Type type) {
@@ -102,5 +104,23 @@ public class GameManager : MonoBehaviour {
             bossHealthMap[Boss.Type.EARTH] <= 0 &&
             bossHealthMap[Boss.Type.AIR] <= 0 &&
             bossHealthMap[Boss.Type.RAINBOW] > 0;
+    }
+
+    public void ResetGame() {
+        RoomX = 1;
+        RoomY = 1;
+        Spawn = Door.Spawn.CENTER;
+        PlayerHealth = 5;
+
+        bossHealthMap[Boss.Type.FIRE] = 1;
+        bossHealthMap[Boss.Type.WATER] = 1;
+        bossHealthMap[Boss.Type.EARTH] = 1;
+        bossHealthMap[Boss.Type.AIR] = 1;
+        bossHealthMap[Boss.Type.RAINBOW] = 3;
+
+        SoundManager.instance.musicSource.clip = phase1Music;
+        SoundManager.instance.musicSource.Play();
+
+        Application.LoadLevel(Application.loadedLevel);
     }
 }
