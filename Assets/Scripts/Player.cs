@@ -98,7 +98,7 @@ public class Player : MonoBehaviour {
     }
 
     private void OnCollisionEnter2D(Collision2D other) {
-        if (other.gameObject.tag == "Boss") {
+        if (other.gameObject.tag == "Boss" && GameManager.instance.IsBossAlive(other.gameObject.GetComponent<Boss>().BossType)) {
             TakeDamage(1);
         }
     }

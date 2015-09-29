@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Pathfinding;
 
+[RequireComponent (typeof (Seeker))]
+[RequireComponent (typeof(Rigidbody2D))]
 public class Boss : MonoBehaviour {
     public enum Type {
         FIRE,
@@ -10,8 +13,26 @@ public class Boss : MonoBehaviour {
         RAINBOW
     }
 
+    private Seeker seeker;
+    private Rigidbody2D rb;
     private Animator animator;
     private Type type = Type.RAINBOW;
+    private float colorTime = 0f;
+    private int rainbowIndex = 0;
+    private Color[] rainbow = new Color[] { Color.red, new Color(1.0f, 0.5f, 0f), Color.yellow, Color.green, Color.blue, Color.cyan, Color.magenta };
+    private float colorFadeDelay = 0.3f;
+
+    public Transform target;
+    public Path path;
+    public float speed;
+    public float updateRate = 2f;
+    public ForceMode2D fMode;
+    public float nextWaypointDistance = 3f;
+
+    private int currentWaypoint = 0;
+
+    [HideInInspector]
+    public bool pathHasEnded = false;
 
     public Type BossType {
         get {
@@ -21,7 +42,66 @@ public class Boss : MonoBehaviour {
 
     void Start() {
         animator = GetComponent<Animator>();
+        seeker = GetComponent<Seeker>();
+        rb = GetComponent<Rigidbody2D>();
+
+        if(target == null) {
+            Debug.LogError("No player target found.");
+            return;
+        }
+
+        seeker.StartPath(transform.position, target.position, OnPathComplete);
+
+        StartCoroutine(UpdatePath());
+
         InitType();
+    }
+
+    private void OnPathComplete(Path p) {
+        if(!p.error) {
+            path = p;
+            currentWaypoint = 0;
+        }
+    }
+
+
+    private IEnumerator UpdatePath() {
+        if (target == null || !GameManager.instance.IsBossAlive(type))
+            yield return false;
+
+        seeker.StartPath(transform.position, target.position, OnPathComplete);
+
+        yield return new WaitForSeconds(1f / updateRate);
+
+        StartCoroutine(UpdatePath());
+    }
+
+    void FixedUpdate() {
+        if (!GameManager.instance.IsBossAlive(type))
+            return;
+
+        if (target == null || path == null)
+            return;
+
+        if(currentWaypoint >= path.vectorPath.Count) {
+            if (pathHasEnded) return;
+
+            pathHasEnded = true;
+            return;
+        }
+
+        pathHasEnded = false;
+
+        Vector3 dir = (path.vectorPath[currentWaypoint] - transform.position).normalized;
+        dir *= speed * Time.fixedDeltaTime;
+
+        rb.AddForce(dir, fMode);
+
+        float dist = Vector3.Distance(transform.position, path.vectorPath[currentWaypoint]);
+        if(dist < nextWaypointDistance) {
+            currentWaypoint++;
+            return;
+        }
     }
 
     private void InitType() {
@@ -50,36 +130,44 @@ public class Boss : MonoBehaviour {
                 break;
         }
 
-        animator.SetInteger("health", GameManager.instance.GetBossHealth(type));
+        int health = GameManager.instance.GetBossHealth(type);
+        animator.SetInteger("health", health);
+        if(health < 0) {
+            GetComponent<CircleCollider2D>().enabled = false;
+        }
     }
 
     void Update() {
         if (!GameManager.instance.IsBossAlive(type)) return;
 
         switch (type) {
-            case Type.FIRE:
-                UpdateFireAI();
-                break;
-            case Type.WATER:
-                break;
-            case Type.AIR:
-                break;
-            case Type.EARTH:
-                break;
             case Type.RAINBOW:
                 RainbowFadeColor();
                 break;
         }
+
+        float horizontal = rb.velocity.x;
+        float vertical = rb.velocity.y;
+
+        animator.SetFloat("speed", Mathf.Abs(horizontal != 0 ? horizontal : vertical));
+
+        if (horizontal > 0f && !facingRight)
+            Flip();
+        else if (horizontal < 0f && facingRight)
+            Flip();
     }
 
-    private void UpdateFireAI() {
+    private bool facingRight = false;
+    void Flip() {
+        facingRight = !facingRight;
+        Vector2 scale = transform.localScale;
+        scale.x *= -1;
+        transform.localScale = scale;
 
+        Vector3 position = transform.position;
+        position.x += facingRight ? -2f : 2f;
+        transform.position = position;
     }
-
-    private float colorTime = 0f;
-    private int rainbowIndex = 0;
-    private Color[] rainbow = new Color[] { Color.red, new Color(1.0f, 0.5f, 0f), Color.yellow, Color.green, Color.blue, Color.cyan, Color.magenta };
-    private float colorFadeDelay = 0.3f;
 
     private void RainbowFadeColor() {
         int fromIndex = rainbowIndex;
@@ -106,6 +194,8 @@ public class Boss : MonoBehaviour {
             GameManager.instance.DamageBoss(type, other.GetComponent<Projectile>().damage);
             animator.SetInteger("health", GameManager.instance.GetBossHealth(type));
             if(!GameManager.instance.IsBossAlive(type)) {
+                GetComponent<CircleCollider2D>().enabled = false;
+                rb.velocity = Vector3.zero;
                 if(type == Type.RAINBOW) {
                     GetComponent<SpriteRenderer>().color = Color.white;
                     GameManager.instance.StartCoroutine(LoadVictoryScene());
