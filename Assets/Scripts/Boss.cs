@@ -2,8 +2,10 @@
 using System.Collections;
 using Pathfinding;
 
-[RequireComponent (typeof (Seeker))]
-[RequireComponent (typeof(Rigidbody2D))]
+[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(Seeker))]
 public class Boss : MonoBehaviour {
     public enum Type {
         FIRE,
@@ -45,20 +47,21 @@ public class Boss : MonoBehaviour {
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
 
-        if(target == null) {
+        if (target == null) {
             Debug.LogError("No player target found.");
             return;
         }
 
         seeker.StartPath(transform.position, target.position, OnPathComplete);
-
         StartCoroutine(UpdatePath());
+
+        v = transform.position - center.position;
 
         InitType();
     }
 
     private void OnPathComplete(Path p) {
-        if(!p.error) {
+        if (!p.error) {
             path = p;
             currentWaypoint = 0;
         }
@@ -80,10 +83,18 @@ public class Boss : MonoBehaviour {
         if (!GameManager.instance.IsBossAlive(type))
             return;
 
+        //FollowTarget();
+
+        CircleMove();
+
+        // TODO add different behaviors of AI here (ex. stop and shoot fireballs)
+    }
+
+    private void FollowTarget() {
         if (target == null || path == null)
             return;
 
-        if(currentWaypoint >= path.vectorPath.Count) {
+        if (currentWaypoint >= path.vectorPath.Count) {
             if (pathHasEnded) return;
 
             pathHasEnded = true;
@@ -97,11 +108,31 @@ public class Boss : MonoBehaviour {
 
         rb.AddForce(dir, fMode);
 
+        float horizontal = rb.velocity.x;
+        float vertical = rb.velocity.y;
+
+        animator.SetFloat("speed", Mathf.Abs(horizontal != 0 ? horizontal : vertical));
+
+        if (horizontal > 0f && !facingRight)
+            Flip();
+        else if (horizontal < 0f && facingRight)
+            Flip();
+
         float dist = Vector3.Distance(transform.position, path.vectorPath[currentWaypoint]);
-        if(dist < nextWaypointDistance) {
+        if (dist <= nextWaypointDistance) {
             currentWaypoint++;
             return;
         }
+    }
+
+    public Transform center;
+    public float degreesPerSecond = -65.0f;
+    private Vector3 v;
+    private void CircleMove() {
+        rb.isKinematic = true;
+        v = Quaternion.AngleAxis(degreesPerSecond * Time.deltaTime, Vector3.forward) * v;
+        transform.position = ((Vector3)GetComponent<Collider2D>().offset) + center.position + v;
+        animator.SetFloat("speed", 1f);
     }
 
     private void InitType() {
@@ -132,7 +163,7 @@ public class Boss : MonoBehaviour {
 
         int health = GameManager.instance.GetBossHealth(type);
         animator.SetInteger("health", health);
-        if(health < 0) {
+        if (health < 0) {
             GetComponent<CircleCollider2D>().enabled = false;
         }
     }
@@ -145,16 +176,6 @@ public class Boss : MonoBehaviour {
                 RainbowFadeColor();
                 break;
         }
-
-        float horizontal = rb.velocity.x;
-        float vertical = rb.velocity.y;
-
-        animator.SetFloat("speed", Mathf.Abs(horizontal != 0 ? horizontal : vertical));
-
-        if (horizontal > 0f && !facingRight)
-            Flip();
-        else if (horizontal < 0f && facingRight)
-            Flip();
     }
 
     private bool facingRight = false;
@@ -189,14 +210,14 @@ public class Boss : MonoBehaviour {
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-        if(other.tag == "PlayerProjectile") {
+        if (other.tag == "PlayerProjectile") {
             animator.SetTrigger("hit");
             GameManager.instance.DamageBoss(type, other.GetComponent<Projectile>().damage);
             animator.SetInteger("health", GameManager.instance.GetBossHealth(type));
-            if(!GameManager.instance.IsBossAlive(type)) {
+            if (!GameManager.instance.IsBossAlive(type)) {
                 GetComponent<CircleCollider2D>().enabled = false;
                 rb.velocity = Vector3.zero;
-                if(type == Type.RAINBOW) {
+                if (type == Type.RAINBOW) {
                     GetComponent<SpriteRenderer>().color = Color.white;
                     GameManager.instance.StartCoroutine(LoadVictoryScene());
                 }

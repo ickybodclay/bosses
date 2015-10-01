@@ -19,7 +19,10 @@ public class LevelManager : MonoBehaviour {
 
     public void SetupScene(int roomX, int roomY) {
         LevelSetup(roomX, roomY);
-        GameObject.Find("A*").GetComponent<AstarPath>().Scan();
+
+        if(AstarPath.active != null) {
+            AstarPath.active.Scan();
+        }
     }
 
     private void LevelSetup(int roomX, int roomY) {
